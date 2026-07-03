@@ -317,7 +317,7 @@ class NetflixCheckerBot:
     async def start_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         user = update.effective_user
         logger.info(f"User {user.id} (@{user.username}) started bot")
-        await update.message.reply_text(f"🎬 <b>NETFLIX CHECKER BOT</b> v{VERSION}\n\n👨‍💻 <b>Desenvolvido por:</b> {DEVELOPER}\n\n✨ Envie cookies Netflix para verificar!\n📝 /help para comandos", parse_mode="HTML")
+        await update.message.reply_text(f"🎬 <b>NETFLIX CHECKER BOT</b> v{VERSION}\n\n👨‍💻 <b>Desenvolvido por:</b> {DEVELOPER}\n\n🔑 Envie seu cookie para gerar NFToken!\n🎯 /help para ver todos os comandos", parse_mode="HTML")
 
     async def help_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f"📚 <b>COMANDOS:</b>\n/start - Menu\n/help - Ajuda\n/stats - Estatísticas\n/logs - Logs\n/done - Processar lote\n/cancel - Cancelar\n\n👨‍💻 {DEVELOPER}", parse_mode="HTML")
