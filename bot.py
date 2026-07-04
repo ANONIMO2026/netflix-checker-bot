@@ -25,7 +25,6 @@ os.makedirs("hits", exist_ok=True)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s', handlers=[RotatingFileHandler("logs/bot.log", maxBytes=10*1024*1024, backupCount=5, encoding='utf-8'), logging.StreamHandler()])
 logger = logging.getLogger(__name__)
 
-# Lista de palavras bloqueadas (SPAM)
 SPAM_WORDS = ['luckybear', 'казино', 'casino', 'bond', 'wndpr', 'lucky', 'bear', 'ставки', 'ставка', 'играть', 'выигрыш', 'приз', 'бонус', 't.me/', 'https://t.me/', 'https://wndpr', 'https://bond']
 
 UA_WEB = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
@@ -320,10 +319,10 @@ class NetflixCheckerBot:
     async def start_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         user = update.effective_user
         logger.info(f"User {user.id} (@{user.username}) started bot")
-        await update.message.reply_text(f"🎬 <b>NETFLIX CHECKER BOT</b> v{VERSION}\n\n👨‍💻 <b>Desenvolvido por:</b> {DEVELOPER}\n\n🔑 Envie seu cookie para gerar NFToken!\n🎯 /help para ver todos os comandos\n\n🛡️ <b>Proteção Antispam ATIVADA!</b>", parse_mode="HTML")
+        await update.message.reply_text(f"🎬 <b>NETFLIX CHECKER BOT</b> v{VERSION}\n\n👨‍💻 <b>Desenvolvido por:</b> {DEVELOPER}\n\n🔑 Envie seu cookie para gerar NFToken!\n🎯 /help para ver todos os comandos\n\n🛡️ <b>Antispam ATIVADO!</b>", parse_mode="HTML")
 
     async def help_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        await update.message.reply_text(f"📚 <b>COMANDOS:</b>\n/start - Menu\n/help - Ajuda\n/stats - Estatísticas\n/logs - Logs\n/done - Processar lote\n/cancel - Cancelar\n\n🛡️ Spam é bloqueado automaticamente!\n\n👨‍💻 {DEVELOPER}", parse_mode="HTML")
+        await update.message.reply_text(f"📚 <b>COMANDOS:</b>\n/start - Menu\n/help - Ajuda\n/stats - Estatísticas\n/logs - Logs\n/done - Processar lote\n/cancel - Cancelar\n\n🛡️ Spam bloqueado automaticamente!\n\n👨‍💻 {DEVELOPER}", parse_mode="HTML")
 
     async def stats_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         if self.checker.stats["checked"] == 0:
@@ -371,14 +370,13 @@ class NetflixCheckerBot:
         user = update.effective_user
         message_text = update.message.text
         
-        # 🛡️ ANTISPAM - Bloquear cassino, links suspeitos, etc
         if any(word in message_text.lower() for word in SPAM_WORDS):
-            logger.warning(f"🛡️ SPAM bloqueado de @{user.username} (ID: {user.id}): {message_text[:100]}")
+            logger.warning(f"SPAM bloqueado de @{user.username}: {message_text[:100]}")
             try:
                 await update.message.delete()
             except:
                 pass
-            await update.message.reply_text("🚫 <b>SPAM BLOQUEADO!</b>\n\nSua mensagem foi removida.\nEste bot é apenas para verificação Netflix.", parse_mode="HTML")
+            await update.message.reply_text("🚫 <b>SPAM BLOQUEADO!</b>\n\nMensagem removida.", parse_mode="HTML")
             return
         
         logger.info(f"Message from @{user.username}: {message_text[:100]}")
