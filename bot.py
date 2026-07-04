@@ -17,7 +17,10 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 BOT_TOKEN = "8691326863:AAG9Tw_2pxz_Y4bQd7nQd276Ssx3nNU10SA"
 DEVELOPER = "@jhonatan_felipe447"
-VERSION = "2.1.0"
+VERSION = "2.2.0"
+
+# 🔒 IDs dos ADMINS (só eles usam /stats e /logs)
+ADMIN_IDS = [8546034216]
 
 os.makedirs("logs", exist_ok=True)
 os.makedirs("hits", exist_ok=True)
@@ -25,6 +28,7 @@ os.makedirs("hits", exist_ok=True)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s', handlers=[RotatingFileHandler("logs/bot.log", maxBytes=10*1024*1024, backupCount=5, encoding='utf-8'), logging.StreamHandler()])
 logger = logging.getLogger(__name__)
 
+# 🛡️ Palavras bloqueadas (SPAM)
 SPAM_WORDS = ['luckybear', 'казино', 'casino', 'bond', 'wndpr', 'lucky', 'bear', 'ставки', 'ставка', 'играть', 'выигрыш', 'приз', 'бонус', 't.me/', 'https://t.me/', 'https://wndpr', 'https://bond']
 
 UA_WEB = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
@@ -316,15 +320,22 @@ class NetflixCheckerBot:
         self.app.add_handler(CommandHandler("cancel", self.cancel_command))
         self.app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, self.handle_message))
 
+    def is_admin(self, user_id):
+        return user_id in ADMIN_IDS
+
     async def start_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         user = update.effective_user
         logger.info(f"User {user.id} (@{user.username}) started bot")
         await update.message.reply_text(f"🎬 <b>NETFLIX CHECKER BOT</b> v{VERSION}\n\n👨‍💻 <b>Desenvolvido por:</b> {DEVELOPER}\n\n🔑 Envie seu cookie para gerar NFToken!\n🎯 /help para ver todos os comandos\n\n🛡️ <b>Antispam ATIVADO!</b>", parse_mode="HTML")
 
     async def help_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        await update.message.reply_text(f"📚 <b>COMANDOS:</b>\n/start - Menu\n/help - Ajuda\n/stats - Estatísticas\n/logs - Logs\n/done - Processar lote\n/cancel - Cancelar\n\n🛡️ Spam bloqueado automaticamente!\n\n👨‍💻 {DEVELOPER}", parse_mode="HTML")
+        await update.message.reply_text(f"📚 <b>COMANDOS:</b>\n/start - Menu\n/help - Ajuda\n/done - Processar lote\n/cancel - Cancelar\n\n🔒 /stats e /logs - Só ADM\n🛡️ Spam bloqueado!\n\n👨‍💻 {DEVELOPER}", parse_mode="HTML")
 
     async def stats_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        user = update.effective_user
+        if not self.is_admin(user.id):
+            await update.message.reply_text("🔒 <b>ACESSO RESTRITO!</b>\nApenas o administrador pode usar este comando.", parse_mode="HTML")
+            return
         if self.checker.stats["checked"] == 0:
             await update.message.reply_text("📊 Nenhuma estatística ainda.")
             return
@@ -332,6 +343,10 @@ class NetflixCheckerBot:
         await update.message.reply_text(f"📊 <b>ESTATÍSTICAS</b>\n\n📝 Total: {stats['total']}\n✅ Checados: {stats['checked']}\n🎯 Hits: {stats['hits']}\n❌ Bad: {stats['bad']}\n⚠️ Erros: {stats['errors']}\n⏱ Tempo: {stats['elapsed']}\n🚀 CPM: {stats['cpm']}\n\n👨‍💻 {DEVELOPER}", parse_mode="HTML")
 
     async def logs_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        user = update.effective_user
+        if not self.is_admin(user.id):
+            await update.message.reply_text("🔒 <b>ACESSO RESTRITO!</b>\nApenas o administrador pode usar este comando.", parse_mode="HTML")
+            return
         try:
             logs_text = "📋 <b>LOGS</b>\n\n"
             if os.path.exists("logs/hits.log"):
@@ -423,7 +438,7 @@ class NetflixCheckerBot:
         await update.message.reply_text(caption, parse_mode="HTML", reply_markup=markup)
 
     def run(self):
-        logger.info(f"Bot iniciado - Dev: {DEVELOPER} - ANTISPAM ATIVO")
+        logger.info(f"Bot iniciado - Dev: {DEVELOPER} - ANTISPAM ATIVO - ADMIN PROTEGIDO")
         self.app.run_polling()
 
 if __name__ == "__main__":
