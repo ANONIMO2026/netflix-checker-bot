@@ -18,7 +18,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # ✅ TOKEN NOVO E SEGURO
 BOT_TOKEN = "8691326863:AAG-PHpLIvKqeBD0D_KHdwXgtjRONEfgOiI"
 DEVELOPER = "@jhonatan_felipe447"
-VERSION = "2.2.1"
+VERSION = "2.3.0"
 
 # 🔒 IDs dos ADMINS (só eles usam /stats e /logs)
 ADMIN_IDS = [8546034216]
@@ -263,10 +263,33 @@ class NetflixCheckerBot:
     async def start_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         user = update.effective_user
         logger.info(f"User {user.id} (@{user.username}) started bot")
-        await update.message.reply_text(f"🎬 <b>NETFLIX CHECKER BOT</b> v{VERSION}\n\n👨‍💻 <b>Desenvolvido por:</b> {DEVELOPER}\n\n🔑 Envie seu cookie para gerar NFToken!\n🎯 /help para ver todos os comandos\n\n🛡️ <b>Antispam ATIVADO!</b>", parse_mode="HTML")
+        await update.message.reply_text(
+            f"<b>╔══════════════════════════════════════╗</b>\n"
+            f"<b>║     🎬 NETFLIX CHECKER BOT v{VERSION}    ║</b>\n"
+            f"<b>╚══════════════════════════════════════╝</b>\n\n"
+            f"<b>👨‍💻 Desenvolvedor:</b> {DEVELOPER}\n\n"
+            f"🔑 Envie seu cookie para gerar <b>NFToken</b>!\n"
+            f"🎯 /help - Comandos disponíveis\n\n"
+            f"🛡️ <b>Antispam ATIVADO!</b>\n"
+            f"🔒 /stats e /logs - Só ADM",
+            parse_mode="HTML"
+        )
 
     async def help_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        await update.message.reply_text(f"📚 <b>COMANDOS:</b>\n/start - Menu\n/help - Ajuda\n/done - Processar lote\n/cancel - Cancelar\n\n🔒 /stats e /logs - Só ADM\n🛡️ Spam bloqueado!\n\n👨‍💻 {DEVELOPER}", parse_mode="HTML")
+        await update.message.reply_text(
+            f"<b>╔══════════════════════════════════════╗</b>\n"
+            f"<b>║        📚 COMANDOS DISPONÍVEIS        ║</b>\n"
+            f"<b>╚══════════════════════════════════════╝</b>\n\n"
+            f"🎬 /start - Menu principal\n"
+            f"📋 /help - Esta ajuda\n"
+            f"📦 /done - Processar lote\n"
+            f"❌ /cancel - Cancelar operação\n\n"
+            f"🔒 /stats - Estatísticas (ADM)\n"
+            f"📊 /logs - Ver logs (ADM)\n\n"
+            f"🛡️ Spam bloqueado automaticamente!\n\n"
+            f"👨‍💻 {DEVELOPER}",
+            parse_mode="HTML"
+        )
 
     async def stats_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         user = update.effective_user
@@ -277,7 +300,20 @@ class NetflixCheckerBot:
             await update.message.reply_text("📊 Nenhuma estatística ainda.")
             return
         stats = self.checker.get_stats()
-        await update.message.reply_text(f"📊 <b>ESTATÍSTICAS</b>\n\n📝 Total: {stats['total']}\n✅ Checados: {stats['checked']}\n🎯 Hits: {stats['hits']}\n❌ Bad: {stats['bad']}\n⚠️ Erros: {stats['errors']}\n⏱ Tempo: {stats['elapsed']}\n🚀 CPM: {stats['cpm']}\n\n👨‍💻 {DEVELOPER}", parse_mode="HTML")
+        await update.message.reply_text(
+            f"<b>╔══════════════════════════════════════╗</b>\n"
+            f"<b>║        📊 ESTATÍSTICAS               ║</b>\n"
+            f"<b>╚══════════════════════════════════════╝</b>\n\n"
+            f"📝 <b>Total:</b> {stats['total']}\n"
+            f"✅ <b>Checados:</b> {stats['checked']}\n"
+            f"🎯 <b>Hits:</b> {stats['hits']}\n"
+            f"❌ <b>Bad:</b> {stats['bad']}\n"
+            f"⚠️ <b>Erros:</b> {stats['errors']}\n"
+            f"⏱ <b>Tempo:</b> {stats['elapsed']}\n"
+            f"🚀 <b>CPM:</b> {stats['cpm']}\n\n"
+            f"👨‍💻 {DEVELOPER}",
+            parse_mode="HTML"
+        )
 
     async def logs_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         user = update.effective_user
@@ -285,7 +321,7 @@ class NetflixCheckerBot:
             await update.message.reply_text("🔒 <b>ACESSO RESTRITO!</b>\nApenas o administrador pode usar este comando.", parse_mode="HTML")
             return
         try:
-            logs_text = "📋 <b>LOGS</b>\n\n"
+            logs_text = "<b>╔══════════════════════════════════════╗</b>\n<b>║        📊 ÚLTIMOS LOGS               ║</b>\n<b>╚══════════════════════════════════════╝</b>\n\n"
             if os.path.exists("logs/hits.log"):
                 with open("logs/hits.log","r") as f:
                     hits = f.readlines()[-5:]
@@ -293,7 +329,7 @@ class NetflixCheckerBot:
                     logs_text += "<b>🎯 Hits:</b>\n"
                     for h in hits:
                         logs_text += f"• {h.strip()[-80:]}\n"
-            await update.message.reply_text(logs_text + f"\n👨‍💻 {DEVELOPER}" if logs_text != "📋 <b>LOGS</b>\n\n" else "Nenhum log ainda.", parse_mode="HTML")
+            await update.message.reply_text(logs_text + f"\n👨‍💻 {DEVELOPER}" if logs_text != "" else "Nenhum log ainda.", parse_mode="HTML")
         except:
             await update.message.reply_text("❌ Erro ao ler logs.")
 
@@ -324,10 +360,8 @@ class NetflixCheckerBot:
         
         if any(word in message_text.lower() for word in SPAM_WORDS):
             logger.warning(f"SPAM bloqueado de @{user.username}: {message_text[:100]}")
-            try:
-                await update.message.delete()
-            except:
-                pass
+            try: await update.message.delete()
+            except: pass
             await update.message.reply_text("🚫 <b>SPAM BLOQUEADO!</b>\n\nMensagem removida.", parse_mode="HTML")
             return
         
@@ -342,8 +376,7 @@ class NetflixCheckerBot:
                 await update.message.reply_text("❌ Cookie inválido.")
         else:
             user_id = user.id
-            if user_id not in self.user_sessions:
-                self.user_sessions[user_id] = []
+            if user_id not in self.user_sessions: self.user_sessions[user_id] = []
             cookies = load_cookies(message_text)
             if cookies:
                 self.user_sessions[user_id].append(message_text)
@@ -359,19 +392,45 @@ class NetflixCheckerBot:
         pv = "✅" if acc.get("phone_verified") else "❌"
         nf_id = acc.get("netflix_id_raw","")
         cookie_val = f"NetflixId={nf_id}" if nf_id else acc.get("cookie_raw","")
-        caption = f"🎬 <b>NETFLIX HIT!</b>\n\n👤 <b>{acc['name']}</b>\n📧 <code>{acc['email']}</code>\n🌍 {acc['country']} {flag} ({cc})\n\n📋 <b>{acc['plan']}</b>  •  💰 {acc['price']}\n📅 Since: {acc['member_since']}\n🗓 Billing: {acc['next_billing']}\n🎁 Free Trial: {'Yes' if acc['free_trial'] else 'No'}\n\n🎥 {acc['video_quality']}  |  📺 {acc['max_streams']} streams  |  ➕ {acc['extra_slots']} extra\n💳 {acc['card_brand']} *{acc['card_last4']}\n📞 {acc['phone']}  {pv}\n👥 Profiles ({acc['profile_count']}): {profs}\n\n🍪 <b>Cookie:</b>\n<code>{cookie_val[:100]}</code>\n\n👨‍💻 {DEVELOPER}"
+        
+        caption = (
+            f"<b>╔══════════════════════════════════════╗</b>\n"
+            f"<b>║     🎬 NETFLIX PREMIUM HIT           ║</b>\n"
+            f"<b>╚══════════════════════════════════════╝</b>\n\n"
+            f"<b>👤 Nome:</b> {acc['name']}\n"
+            f"<b>📧 Email:</b> <code>{acc['email']}</code>\n"
+            f"<b>🌍 País:</b> {acc['country']} {flag} ({cc})\n\n"
+            f"<b>╭─────────────────────────────────╮</b>\n"
+            f"<b>│  📋 {acc['plan']}  •  💰 {acc['price']}</b>\n"
+            f"<b>│  📅 Desde:</b> {acc['member_since']}\n"
+            f"<b>│  🗓 Próxima cobrança:</b> {acc['next_billing']}\n"
+            f"<b>│  🎁 Trial:</b> {'Sim' if acc['free_trial'] else 'Não'}\n"
+            f"<b>╰─────────────────────────────────╯</b>\n\n"
+            f"<b>╭─────────────────────────────────╮</b>\n"
+            f"<b>│  🎥 Qualidade:</b> {acc['video_quality']}\n"
+            f"<b>│  📺 Telas:</b> {acc['max_streams']} simultâneas\n"
+            f"<b>│  ➕ Extra:</b> {acc['extra_slots']}\n"
+            f"<b>│  💳 Cartão:</b> {acc['card_brand']} ****{acc['card_last4']}\n"
+            f"<b>│  📞 Tel:</b> {acc['phone']}  {pv}\n"
+            f"<b>│  👥 Perfis:</b> {acc['profile_count']} ({profs})\n"
+            f"<b>╰─────────────────────────────────╯</b>\n\n"
+            f"<b>🍪 Cookie:</b>\n<code>{cookie_val[:100]}</code>\n\n"
+            f"<b>👨‍💻 {DEVELOPER}</b>"
+        )
+        
         buttons = []
         row1 = []
         if acc.get("login_pc") and acc["login_pc"] != "N/A":
             row1.append(InlineKeyboardButton("🖥 PC", url=acc["login_pc"]))
         if acc.get("login_phone") and acc["login_phone"] != "N/A":
             row1.append(InlineKeyboardButton("📱 Phone", url=acc["login_phone"]))
-        if row1:
-            buttons.append(row1)
+        if row1: buttons.append(row1)
         buttons.append([InlineKeyboardButton("📺 TV", url=acc["login_tv"])])
         markup = InlineKeyboardMarkup(buttons)
+        
         if len(caption) > 4000:
             caption = caption[:3900] + "...\n\n👨‍💻 " + DEVELOPER
+        
         await update.message.reply_text(caption, parse_mode="HTML", reply_markup=markup)
 
     def run(self):
